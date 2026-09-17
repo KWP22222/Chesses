@@ -1,3 +1,5 @@
+import ru.vsu.cs.oop26.g61.chesses.CreateDesk;
+
 void main() {
 Scanner scan = new Scanner(System.in);
 System.out.println("Застрял и не можешь придумать следующий ход? Не беда! Я помогу тебе;)");
