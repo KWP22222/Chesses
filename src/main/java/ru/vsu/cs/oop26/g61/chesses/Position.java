@@ -18,6 +18,7 @@ public final class Position {
     public Board getBoard(){
         return new Board(board);
     }
+    public Color getColor(){ return activeColor; }
 
     @Override
     public boolean equals(Object o) {
