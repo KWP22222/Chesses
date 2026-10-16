@@ -13,4 +13,6 @@ public record Queen(Color color) implements Figure{
     public FigureType getType() {
         return FigureType.QUEEN;
     }
+    @Override
+    public Color getColor() {return color;}
 }

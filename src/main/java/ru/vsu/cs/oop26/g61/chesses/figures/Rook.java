@@ -13,4 +13,6 @@ public record Rook(Color color) implements Figure {
     public FigureType getType() {
         return FigureType.ROOK;
     }
+    @Override
+    public Color getColor() {return color;}
 }

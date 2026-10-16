@@ -13,4 +13,6 @@ public record Knight(Color color) implements Figure {
     public FigureType getType() {
         return FigureType.KNIGHT;
     }
+    @Override
+    public Color getColor() {return color;}
 }

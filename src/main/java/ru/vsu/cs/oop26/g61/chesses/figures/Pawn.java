@@ -13,4 +13,6 @@ public record Pawn(Color color) implements Figure {
     public FigureType getType() {
         return FigureType.PAWN;
     }
+    @Override
+    public Color getColor() {return color;}
 }

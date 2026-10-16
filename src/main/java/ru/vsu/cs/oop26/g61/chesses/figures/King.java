@@ -13,4 +13,7 @@ public record King(Color color) implements Figure {
     public FigureType getType() {
         return FigureType.KING;
     }
+
+    @Override
+    public Color getColor() {return color;}
 }

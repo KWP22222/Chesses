@@ -13,4 +13,6 @@ public record Bishop(Color color) implements Figure {
     public FigureType getType() {
         return FigureType.BISHOP;
     }
+    @Override
+    public Color getColor() {return color;}
 }
