@@ -1,5 +1,8 @@
 package ru.vsu.cs.oop26.g61.chesses.exception;
 
+/**
+ * Исключение, выбрасываемое при попытке сделать недопустимый шахматный ход.
+ */
 public class IllegalMoveException extends Exception{
     private final String reason;
 

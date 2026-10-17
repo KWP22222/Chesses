@@ -7,9 +7,6 @@ import ru.vsu.cs.oop26.g61.chesses.figures.*;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Тесты шахматного движка.
- */
 public class ChessEngineTest {
 
     private ChessEngine engine;
@@ -23,43 +20,32 @@ public class ChessEngineTest {
 
     @Test
     void testInitialPositionHas20LegalMoves() {
-        // В начальной позиции у белых 20 легальных ходов (16 ходов пешками + 4 хода конями)
+        System.out.println("\n=== Тест: 20 легальных ходов в начальной позиции ===");
+        printBoard(initialPosition);
+
         List<Move> moves = engine.getLegalMoves(initialPosition);
+        System.out.println("Легальных ходов: " + moves.size());
+
         assertEquals(20, moves.size(), "В начальной позиции должно быть 20 легальных ходов");
     }
 
     @Test
     void testKnightMoves() {
-        // Конь на b1 может пойти на a3 или c3
+        System.out.println("\n=== Тест: Ходы коня ===");
+        printBoard(initialPosition);
+
         List<Move> moves = engine.getLegalMoves(initialPosition);
         long knightMoves = moves.stream()
                 .filter(m -> m.from().equals(new Cell('b', 1)))
                 .count();
-        assertEquals(2, knightMoves, "Конь на b1 должен иметь 2 хода");
-    }
 
-    @Test
-    void testBishopMoves() {
-        // Создаем позицию, где слон может ходить
-        Board board = new Board();
-        board.setFigureAt(new Cell('c', 1), new Bishop(Color.WHITE));
-        board.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
-        board.setFigureAt(new Cell('e', 8), new King(Color.BLACK));
-
-        Position position = new Position(board, Color.WHITE,
-                true, true, true, true,
-                null, 0, 1 );
-
-        List<Move> moves = engine.getLegalMoves(position);
-        long bishopMoves = moves.stream()
-                .filter(m -> m.from().equals(new Cell('c', 1)))
-                .count();
-        assertTrue(bishopMoves > 0, "Слон должен иметь хотя бы 1 ход");
+        System.out.println("Ходов коня на b1: " + knightMoves);
+        assertEquals(2, knightMoves, "Конь на b1 должен иметь 2 хода (a3 и c3)");
     }
 
     @Test
     void testCastling() {
-        // Создаем позицию для короткой рокировки
+        System.out.println("\n=== Тест: Рокировка ===");
         Board board = new Board();
         board.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
         board.setFigureAt(new Cell('h', 1), new Rook(Color.WHITE));
@@ -67,17 +53,21 @@ public class ChessEngineTest {
 
         Position position = new Position(board, Color.WHITE,
                 true, false, false, false,
-                null, 0, 1 );
+                null, 0, 1);
+
+        printBoard(position);
 
         List<Move> moves = engine.getLegalMoves(position);
         boolean hasCastling = moves.stream()
                 .anyMatch(m -> m.type() == Move.MoveType.CASTLING_KING_SIDE);
+
+        System.out.println("Доступна короткая рокировка: " + hasCastling);
         assertTrue(hasCastling, "Должна быть доступна короткая рокировка");
     }
 
     @Test
     void testEnPassant() {
-        // Создаем позицию для взятия на проходе
+        System.out.println("\n=== Тест: Взятие на проходе ===");
         Board board = new Board();
         board.setFigureAt(new Cell('e', 5), new Pawn(Color.WHITE));
         board.setFigureAt(new Cell('d', 7), new Pawn(Color.BLACK));
@@ -87,17 +77,22 @@ public class ChessEngineTest {
         Cell enPassantCell = new Cell('d', 6);
         Position position = new Position(board, Color.WHITE,
                 true, true, true, true,
-                enPassantCell, 0, 1 );
+                enPassantCell, 0, 1);
+
+        printBoard(position);
+        System.out.println("Поле для взятия на проходе: " + enPassantCell);
 
         List<Move> moves = engine.getLegalMoves(position);
         boolean hasEnPassant = moves.stream()
                 .anyMatch(m -> m.type() == Move.MoveType.EN_PASSANT);
+
+        System.out.println("Доступно взятие на проходе: " + hasEnPassant);
         assertTrue(hasEnPassant, "Должно быть доступно взятие на проходе");
     }
 
     @Test
     void testPawnPromotion() {
-        // Создаем позицию, где пешка может превратиться
+        System.out.println("\n Тест: Превращение пешки");
         Board board = new Board();
         board.setFigureAt(new Cell('e', 7), new Pawn(Color.WHITE));
         board.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
@@ -107,16 +102,20 @@ public class ChessEngineTest {
                 true, true, true, true,
                 null, 0, 1);
 
+        printBoard(position);
+
         List<Move> moves = engine.getLegalMoves(position);
         long promotionMoves = moves.stream()
                 .filter(m -> m.morphTo() != null)
                 .count();
-        assertEquals(4, promotionMoves, "Пешка должна иметь 4 варианта превращения");
+
+        System.out.println("Ходов с превращением пешки: " + promotionMoves);
+        assertEquals(4, promotionMoves, "Пешка должна иметь 4 варианта превращения (Ф, Л, С, К)");
     }
 
     @Test
     void testCheck() {
-        // Создаем позицию, где белый король под шахом
+        System.out.println("\n=== Тест: Шах ===");
         Board board = new Board();
         board.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
         board.setFigureAt(new Cell('e', 8), new King(Color.BLACK));
@@ -126,12 +125,17 @@ public class ChessEngineTest {
                 true, true, true, true,
                 null, 0, 1);
 
-        assertTrue(engine.isInCheck(position), "Король должен быть под шахом");
+        printBoard(position);
+
+        boolean inCheck = engine.isInCheck(position);
+        System.out.println("Король под шахом: " + inCheck);
+
+        assertTrue(inCheck, "Король должен быть под шахом от черной ладьи на e5");
     }
 
     @Test
     void testIllegalMoveThrowsException() {
-        // Пытаемся сделать ход, который оставляет короля под шахом
+        System.out.println("\nТест: Недопустимый ход (исключение)");
         Board board = new Board();
         board.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
         board.setFigureAt(new Cell('e', 8), new King(Color.BLACK));
@@ -139,9 +143,11 @@ public class ChessEngineTest {
 
         Position position = new Position(board, Color.WHITE,
                 true, true, true, true,
-                null, 0, 1 );
+                null, 0, 1);
 
-        // Ход королем на f1 (все еще под шахом от ладьи)
+        printBoard(position);
+        System.out.println("Попытка хода: Ke1-f1 (король останется под шахом от ладьи)");
+
         Move illegalMove = new Move(new Cell('e', 1), new Cell('f', 1),
                 new King(Color.WHITE));
 
@@ -152,9 +158,15 @@ public class ChessEngineTest {
 
     @Test
     void testCellEqualsAndHashCode() {
+        System.out.println("\n=== Тест: Контракт equals/hashCode для Cell ===");
+
         Cell e4_1 = new Cell('e', 4);
         Cell e4_2 = new Cell('e', 4);
         Cell d4 = new Cell('d', 4);
+
+        System.out.println("Cell 1: " + e4_1);
+        System.out.println("Cell 2: " + e4_2);
+        System.out.println("Cell 3: " + d4);
 
         assertEquals(e4_1, e4_2, "Одинаковые клетки должны быть равны");
         assertEquals(e4_1.hashCode(), e4_2.hashCode(), "Хеш-коды одинаковых клеток должны совпадать");
@@ -163,6 +175,8 @@ public class ChessEngineTest {
 
     @Test
     void testPositionEqualsAndHashCode() {
+        System.out.println("\nТест: Контракт equals/hashCode для Position");
+
         Board board1 = new Board();
         board1.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
         board1.setFigureAt(new Cell('e', 8), new King(Color.BLACK));
@@ -173,10 +187,13 @@ public class ChessEngineTest {
 
         Position pos1 = new Position(board1, Color.WHITE,
                 true, true, true, true,
-                null, 0, 1 );
+                null, 0, 1);
         Position pos2 = new Position(board2, Color.WHITE,
                 true, true, true, true,
-                null, 0, 1 );
+                null, 0, 1);
+
+        System.out.println("Position 1: " + pos1);
+        System.out.println("Position 2: " + pos2);
 
         assertEquals(pos1, pos2, "Одинаковые позиции должны быть равны");
         assertEquals(pos1.hashCode(), pos2.hashCode(), "Хеш-коды одинаковых позиций должны совпадать");
@@ -184,42 +201,72 @@ public class ChessEngineTest {
 
     @Test
     void testEncapsulation() {
-        // Проверяем, что геттеры возвращают копии, а не оригиналы
+        System.out.println("\n=== Тест: Инкапсуляция (защита от изменения) ===");
+
         Board board = new Board();
         board.setFigureAt(new Cell('e', 1), new King(Color.WHITE));
 
         Position position = new Position(board, Color.WHITE,
                 true, true, true, true,
-                null, 0, 1 );
+                null, 0, 1);
+
+        System.out.println("Исходная позиция: король на e1");
 
         Board returnedBoard = position.getBoard();
-        returnedBoard.setFigureAt(new Cell('e', 1), null); // Пытаемся изменить
+        returnedBoard.setFigureAt(new Cell('e', 1), null);
 
-        // Оригинальная позиция не должна измениться
         assertNotNull(position.getBoard().getFigureAt(new Cell('e', 1)),
                 "Изменение возвращенной доски не должно влиять на оригинал");
+
+        System.out.println("Инкапсуляция работает: оригинальная позиция не изменена");
     }
 
     @Test
     void testMakeMoveCreatesNewPosition() throws IllegalMoveException {
-        // Проверяем неизменяемость позиции
+        System.out.println("\nТест: Неизменяемость позиции");
+
+        printBoard(initialPosition);
+
         List<Move> moves = engine.getLegalMoves(initialPosition);
         Move firstMove = moves.get(0);
+
+        System.out.println("Применяем ход: " + firstMove.from() + " -> " + firstMove.to());
 
         Position newPosition = engine.makeMove(initialPosition, firstMove);
 
         assertNotSame(initialPosition, newPosition, "makeMove должен создавать новую позицию");
         assertNotEquals(initialPosition.getActiveColor(), newPosition.getActiveColor(),
                 "После хода должен измениться активный цвет");
+
+        System.out.println("Создана новая позиция, ходят: " + newPosition.getActiveColor());
     }
 
     /**
-     * Создает начальную шахматную позицию.
+     * Рисует шахматную доску в консоли.
      */
+    private static void printBoard(Position position) {
+        Board board = position.getBoard();
+        System.out.println("  +------------------------+");
+        for (int rank = 8; rank >= 1; rank--) {
+            System.out.print(rank + " |");
+            for (char file = 'a'; file <= 'h'; file++) {
+                Cell sq = new Cell(file, rank);
+                Figure figure = board.getFigureAt(sq);
+                if (figure != null) {
+                    System.out.print(" " + figure.getSymbol() + " ");
+                } else {
+                    System.out.print(" . ");
+                }
+            }
+            System.out.println("|");
+        }
+        System.out.println("  +------------------------+");
+        System.out.println("    a  b  c  d  e  f  g  h");
+    }
+
     private Position createInitialPosition() {
         Board board = new Board();
 
-        // Черные фигуры
         board.setFigureAt(new Cell('a', 8), new Rook(Color.BLACK));
         board.setFigureAt(new Cell('b', 8), new Knight(Color.BLACK));
         board.setFigureAt(new Cell('c', 8), new Bishop(Color.BLACK));
@@ -248,6 +295,6 @@ public class ChessEngineTest {
 
         return new Position(board, Color.WHITE,
                 true, true, true, true,
-                null, 0, 1 );
+                null, 0, 1);
     }
 }

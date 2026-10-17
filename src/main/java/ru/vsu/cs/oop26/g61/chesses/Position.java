@@ -38,6 +38,10 @@ public final class Position {
     public int getHalfMoveClock() { return halfMoveClock; }
     public int getFullMoveClock() { return fullMoveClock; }
 
+    /**
+     * equals() и hashCode() для проверки троекратного повторения позиции.
+     * ВАЖНО: Счетчики ходов (halfMoveClock, fullMoveNumber) НЕ влияют на уникальность позиции!
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

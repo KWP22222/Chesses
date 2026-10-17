@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoveGenerator {
+    /**
+     * Генерирует все псевдолегальные ходы для текущей позиции.
+     * Псевдолегальные = все ходы по правилам фигур, без проверки шаха.
+     */
     public List<Move> allLegalMoves(Position position){
         List<Move> moves = new ArrayList<>();
         Board board = position.getBoard();
@@ -85,9 +89,7 @@ public class MoveGenerator {
         moves.addAll(promotionMoves);
     }
 
-    /**
-     * Генерация ходов коня.
-     */
+
     private void generateKnightMoves(Position position, Cell from, Knight knight, List<Move> moves) {
         Board board = position.getBoard();
         Color color = knight.getColor();

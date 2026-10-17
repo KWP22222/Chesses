@@ -11,17 +11,6 @@ import static ru.vsu.cs.oop26.g61.chesses.FigureType.*;
 public class RulesValidator {
     private final MoveGenerator moveGenerator = new MoveGenerator();
 
-    /**
-     * Проверяет, находится ли король указанного цвета под шахом.
-     */
-    /*public boolean isInCheck(Position position, Color color) {
-        Board board = position.getBoard();
-
-        Cell kingCell = findKing(board, color);
-        if (kingCell == null) return false;
-        return isCellAttacked(position, kingCell, color);
-    }*/
-
     private Cell findKing(Board board, Color color) {
         for (int num = 1; num <= 8; num++) {
             for (char sy = 'a'; sy <= 'h'; sy++) {
@@ -36,8 +25,7 @@ public class RulesValidator {
     }
 
     /**
-     * Проверяет, атакована ли клетка square фигурами цвета attackerColor.
-     * Использует метод "обратных лучей" (Reverse Raycasting).
+     * Проверяет, атакована ли клетка cell фигурами цвета attackerColor.
      */
     public boolean isCellAttacked(Position position, Cell cell, Color attackerColor) {
         Board board = position.getBoard();
@@ -140,7 +128,10 @@ public class RulesValidator {
         return null;
     }
 
-
+    /**
+     * Генерирует все легальные ходы для текущей позиции.
+     * Фильтрует псевдолегальные ходы, убирая те, что оставляют короля под шахом.
+     */
     public List<Move> generateLegalMoves(Position position) {
         List<Move> pseudoLegalMoves = moveGenerator.allLegalMoves(position);
         List<Move> legalMoves = new ArrayList<>();
@@ -155,7 +146,9 @@ public class RulesValidator {
         return legalMoves;
     }
 
-
+    /**
+     * Применяет ход к позиции и возвращает новую позицию.
+     */
     public Position applyMove(Position position, Move move) {
         Board newBoard = new Board(position.getBoard());
 
@@ -163,13 +156,13 @@ public class RulesValidator {
         newBoard.setFigureAt(move.from(), null);
 
         // Обработка взятия на проходе
-        /*if (move.type() == Move.MoveType.EN_PASSANT) {
-            Color color = piece.getColor();
+        if (move.type() == Move.MoveType.EN_PASSANT) {
+            Color color = figure.getColor();
             int direction = (color == Color.WHITE) ? -1 : 1;
-            Square capturedSquare = new Square(move.to().file(), move.to().rank() + direction);
-            newBoard.setPieceAt(capturedSquare, null);
+            Cell capturedSquare = new Cell(move.to().symbol(), move.to().num() + direction);
+            newBoard.setFigureAt(capturedSquare, null);
         }
-*/
+
         // Обработка рокировки
         if (move.type() == Move.MoveType.CASTLING_KING_SIDE) {
             Color color = figure.getColor();

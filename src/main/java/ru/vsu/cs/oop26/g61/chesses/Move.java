@@ -16,9 +16,17 @@ public record Move(
         CASTLING_QUEEN_SIDE, // Длинная рокировка
         EN_PASSANT           // Взятие на проходе
     }
+
+    /**
+     * Упрощенный конструктор для обычных ходов.
+     */
     public Move(Cell from, Cell to, Figure figure){
         this(from, to, figure, null, MoveType.NORMAL, null);
     }
+
+    /**
+     * Конструктор для ходов со взятием.
+     */
     public Move(Cell from, Cell to, Figure figure, Figure inTarget){
         this(from, to, figure, inTarget, MoveType.NORMAL, null);
     }
